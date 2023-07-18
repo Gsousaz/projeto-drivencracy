@@ -9,7 +9,7 @@ export async function newVote(req, res) {
     const pollExists = await db.collection("polls").findOne({ _id: objectId });
     if (!pollExists) return res.sendStatus(404);
 
-    const titleExists = await db.collection("polls").findOne({ title: title });
+    const titleExists = await db.collection("choices").findOne({ title: title });
     if (titleExists) return res.sendStatus(409);
 
     const insertResult = await db
