@@ -13,7 +13,7 @@ export async function newPoll(req, res) {
     res.status(201).send(insertedPoll);
     console.log(insertedPoll);
   } catch (err) {
-    (err) => res.status(500).send(err);
+    (err) => res.status(500).send(err.message);
   }
 }
 
@@ -23,6 +23,6 @@ export async function showPolls(req, res) {
     console.log(polls);
     res.status(200).send(polls);
   } catch (err) {
-    res.status(500).send(err);
+    (err) => res.status(500).send(err.message);
   }
 }
