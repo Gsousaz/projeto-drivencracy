@@ -1,7 +1,7 @@
 import { db } from "../database/database.connection.js";
 import { ObjectId } from "mongodb";
 
-export async function newVote(req, res) {
+export async function newPollOption(req, res) {
   try {
     const { title, pollId } = req.body;
     const objectId = new ObjectId(pollId);
