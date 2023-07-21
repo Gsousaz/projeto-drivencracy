@@ -1,6 +1,6 @@
+import dayjs from "dayjs";
 import { db } from "../database/database.connection.js";
 import { ObjectId } from "mongodb";
-
 export async function newPollOption(req, res) {
   try {
     const { title, pollId } = req.body;
@@ -14,6 +14,13 @@ export async function newPollOption(req, res) {
       .findOne({ title: title });
     if (titleExists) return res.sendStatus(409);
 
+    const limitDate = dayjs(pollExists.expireAt);
+    const today = dayjs();
+
+    if (today.isAfter(limitDate)) {
+      return res.status(403).send("Enquete encerrada!");
+    }
+
     const insertResult = await db
       .collection("choices")
       .insertOne({ title: title, pollId: pollId });
@@ -22,7 +29,6 @@ export async function newPollOption(req, res) {
       .findOne({ _id: insertResult.insertedId });
 
     res.status(201).send(insertedPoll);
-    console.log(insertedPoll);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -31,11 +37,6 @@ export async function newPollOption(req, res) {
 export async function showPollOptions(req, res) {
   try {
     const id = req.params.id;
-
-    // Validação do ID
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).send("ID inválido");
-    }
 
     const objectId = new ObjectId(id);
     console.log("ID:", id);
@@ -51,8 +52,8 @@ export async function showPollOptions(req, res) {
       .find({ pollId: id })
       .toArray();
 
-    console.log("pollOptions:", pollOptions);
-    return res.sendStatus(200);
+
+    return res.status(200).send(pollOptions)
   } catch (err) {
     console.error("Erro:", err);
     return res.status(500).send(err.message);
